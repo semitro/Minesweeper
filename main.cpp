@@ -19,15 +19,14 @@ using namespace sf;
 #define WINDOW_HEIGHT 640 //N_Y*BLOCK_SIZE
 //char arr[N_X][N_Y]; // массив для рендера
 
+
 bool gamer_alive;
 int arr[N_X][N_Y];
 bool arr_isOpen[N_X][N_Y];
 bool arr_flag[N_X][N_Y];
 std::ofstream fout;
-
+// Yes
 void init_arr(int mines){
-
-
     std::srand( std::time(NULL) );
     for(int i(0);i<N_X;i++)
         for(int j(0);j<N_Y;j++)
@@ -106,6 +105,7 @@ void init_arr(int mines){
         fout << '\n';
     }*/
 }
+// Yes
 void Render_field(sf::RenderWindow &window){
 
     sf::RectangleShape rs;
