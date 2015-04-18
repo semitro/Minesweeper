@@ -87,7 +87,6 @@ void open(int i,int j,bool start=false){
 void left_mouse(sf::Vector2i pos,RenderWindow &w){
 
 
-
 	if(pos.x/BLOCK_SIZE < N_X && pos.y/BLOCK_SIZE < N_Y)
 	{
 		if(!arr_flag[pos.y/BLOCK_SIZE][pos.x/BLOCK_SIZE])
@@ -113,7 +112,7 @@ void rigth_mouse(Vector2i pos,RenderWindow &w){
 int main(){
 
 
-	Map map(16);
+	Map map(25);
 	Gamer gamer;
 
 
@@ -160,7 +159,7 @@ int main(){
 						//left_mouse(mouse_temp,w);
 						map.left_mouse_click(mouse_temp,gamer,w);
 					else
-						rigth_mouse(mouse_temp,w);
+						map.right_mouse_click(mouse_temp,gamer,w);
 
 				}
 

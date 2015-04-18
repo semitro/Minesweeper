@@ -12,9 +12,9 @@ void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
 	texture_empty_opened.loadFromFile("Images/empty32.png");
 	static Sprite sprite_empty_opened(texture_empty_opened);
 	// Спрайт для мины
-	static Texture texutre_sprite;
-	texutre_sprite.loadFromFile("Images/mine32.png");
-	static Sprite sprite_mine(texutre_sprite);
+	static Texture texutre_mine;
+	texutre_mine.loadFromFile("Images/mine32.png");
+	static Sprite sprite_mine(texutre_mine);
 
 	rs.setFillColor(sf::Color(255,255,255));
 	rs.setSize( sf::Vector2f(BLOCK_RENDER_SIZE,BLOCK_RENDER_SIZE) );
@@ -28,8 +28,11 @@ void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
 			if(map.getBlock(i,j).isOpen()) // Здесь будем рендерить открытые поля
 			{
 				// if(arr[i][j] == MINA) old ver
-				if(map.getBlock(i,j).type() == Block::MINE)
-					rs.setFillColor( Color(55,172,185) ); // Редер мины
+				if(map.getBlock(i,j).type() == Block::MINE){
+					sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
+					window.draw(sprite_mine);
+				}
+					// Редер мины
 				else
 				{
 					//rs.setFillColor(Color(255,255,255));
@@ -61,19 +64,13 @@ void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
 
 	if(!gamer.isAlive())
 	{
-		Texture texture;
-		texture.loadFromFile("Images/mine32.png");
 
-
-		Sprite sprite(texture);
-
-		window.draw(sprite);
-
-		for(int i(0);i<map.getNumberBlocks();i++) // Цикл по всем блокам
-			if(map.getBlock(i).type() == Block::MINE && map.getBlock(i).isOpen() == false)
+		for(int i(0);i<map.getSize();i++)
+			for(int j(0);j<map.getSize();j++)
 			{
-				sprite.setPosition(map.getBlock(i).getJ()*BLOCK_RENDER_SIZE,map.getBlock(i).getI()*BLOCK_RENDER_SIZE);
-				window.draw(sprite);
+				if(map.getBlock(i,j).type() == Block::MINE)
+					sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
+					window.draw(sprite_mine);
 			}
 	}
 }

@@ -3,16 +3,20 @@
 //Непосредственно логика игры
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <cstdlib>
+#include <time.h>
 #include <qdebug.h>
 #define BLOCK_RENDER_SIZE 32
 class Gamer
 {
 public:
-	Gamer():_alive(true){}
+	Gamer(int flag_number=20):_alive(true), _flag_number(flag_number){}
 	bool isAlive();
 	void kill();
+	void lessFlag(int number=1);
 private:
 	bool _alive;
+	int _flag_number;
 };
 
 class Block{
@@ -40,7 +44,8 @@ public:
         return _open;
     }
     bool isFlag(void);
-    void setFlag(bool flag=true);
+	void setType(Block_Type type);
+	void setFlag(bool flag=true);
 	void open(Gamer &gamer);
 
 private:
@@ -68,7 +73,9 @@ public:
 	int getNumberBlocks();
 	Block& getBlock(int number);
 	Block& getBlock(int i, int j);
+	void init_mines();
 	void left_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
+	void right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
 private:
     Block *_blocks; //Динамический массив для хранения клеток поля
 	int _number_blocks; // Количество клеток поля
