@@ -1,6 +1,19 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 //Непосредственно логика игры
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
+#include <qdebug.h>
+#define BLOCK_RENDER_SIZE 32
+class Gamer
+{
+public:
+	Gamer():_alive(true){}
+	bool isAlive();
+	void kill();
+private:
+	bool _alive;
+};
 
 class Block{
 public:
@@ -9,7 +22,7 @@ public:
         MINE // Поле с миной
     };
 	Block(int i=0, int j=0,Block_Type type=EMPTY_):
-		_i(i), _j(j), _type(type), _open(false)
+		_i(i), _j(j), _type(type), _open(false), _flag(false)
 	{
 
 	}
@@ -28,6 +41,7 @@ public:
     }
     bool isFlag(void);
     void setFlag(bool flag=true);
+	void open(Gamer &gamer);
 
 private:
     int _i; // Позиция блока в большом поле
@@ -50,23 +64,15 @@ public:
     ~Map(){
         delete[] _blocks;
     }
-    int getSize(){
-        return _size;
-    }
+	int getSize();
 	int getNumberBlocks();
-    Block getBlock(int i);
+	Block& getBlock(int number);
+	Block& getBlock(int i, int j);
+	void left_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
 private:
     Block *_blocks; //Динамический массив для хранения клеток поля
 	int _number_blocks; // Количество клеток поля
     int _size; // Количество клеток (не в квадрате)
-};
-class Gamer
-{
-public:
-	Gamer():_alive(true){}
-	bool isAlive();
-private:
-	bool _alive;
 };
 
 #endif // LOGIC_H
