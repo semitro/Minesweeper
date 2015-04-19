@@ -3,6 +3,7 @@
 //Непосредственно логика игры
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <SFML/Audio.hpp>
 #include <cstdlib>
 #include <time.h>
 #include <qdebug.h>

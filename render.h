@@ -7,6 +7,8 @@
 #define BLOCK_RENDER_SIZE 32
 using namespace sf;
 //Набор функций для визуального отображения игры
+void Render_flag_animated(int i, int j, sf::RenderWindow &window);
+void Render_explosion_animated(int i, int j, sf::RenderWindow &window);
 void Render_field(sf::RenderWindow &window, Map &map, Gamer gamer);
 #endif // RENDER_H
 

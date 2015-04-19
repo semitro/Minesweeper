@@ -5,6 +5,9 @@ bool Gamer::isAlive(){
 }
 void Gamer::kill(){
 	_alive = false;
+	static sf::Music boom;
+	boom.openFromFile("Sounds/explosion.ogg");
+	boom.play();
 }
 void Gamer::lessFlag(int number){
 	if(_flag_number - number >=0 )
@@ -39,7 +42,6 @@ void Block::addMinesAround(int number){
 int Block::getMinesAround(){
 	return _mine_around;
 }
-
 Block::Block_Type Block::type()
 {
 	return _type;
@@ -61,13 +63,8 @@ Block& Map::getBlock(int number)
    return _blocks[number];
 }
 Block& Map::getBlock(int i, int j){
-	// Подумать
 	int elem = i*_size+j;
-	if(elem < _number_blocks)
 		return _blocks[elem];
-	else
-		throw("Map: getBlock(i,j): out of range!");
-
 }
 int Map::getNumberBlocks()
 {
@@ -117,17 +114,20 @@ void Map::init_mines(){
 
 	}
 }
-
 void Map::left_mouse_click(sf::Vector2i pos,Gamer &gamer,sf::RenderWindow &w){
+	if(pos.y/BLOCK_RENDER_SIZE*_size + pos.x/BLOCK_RENDER_SIZE > _number_blocks) // Если клик за пределами поля
+		return;
 	getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).open(gamer);
 	// Чтобы мины инициализировались только после первого клика
 	static bool first_click = true;
 	if(first_click)
 		Map::init_mines();
 	first_click = false;
-	qDebug() << "Mines around: " << getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).getMinesAround() << endl;
+	//qDebug() << "Mines around: " << getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).getMinesAround() << endl;
 }
 void Map::right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w){
+	if(pos.y/BLOCK_RENDER_SIZE*_size + pos.x/BLOCK_RENDER_SIZE > _number_blocks) // Если клик за пределами поля
+		return;
 	if(getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).isOpen())
 		return;
 	if( !getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).isFlag() ){

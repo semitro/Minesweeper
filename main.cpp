@@ -8,7 +8,7 @@
 using namespace sf;
 
 int main(){
-	Map map(5);
+	Map map(25);
 	Gamer gamer;
 	RenderWindow w(VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Minesweeper,Night of Sibirian Fairy Tale 2015");
 	w.setPosition( Vector2i(50,50) );
