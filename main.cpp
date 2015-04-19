@@ -8,7 +8,7 @@
 using namespace sf;
 
 int main(){
-	Map map(25);
+	Map map(5);
 	Gamer gamer;
 	RenderWindow w(VideoMode(WINDOW_WIDTH,WINDOW_HEIGHT),"Minesweeper,Night of Sibirian Fairy Tale 2015");
 	w.setPosition( Vector2i(50,50) );
@@ -33,7 +33,6 @@ int main(){
 					mouse_temp.x *= w.getViewport( w.getView() ).width/WINDOW_WIDTH;
 					mouse_temp.y *= w.getViewport( w.getView() ).height/WINDOW_HEIGHT;
 					if(Mouse::isButtonPressed(Mouse::Left))
-						//left_mouse(mouse_temp,w);
 						map.left_mouse_click(mouse_temp,gamer,w);
 					else
 						map.right_mouse_click(mouse_temp,gamer,w);

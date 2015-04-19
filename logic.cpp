@@ -33,6 +33,13 @@ void Block::setType(Block_Type type){
 void Block::setFlag(bool flag){
 	_flag = flag;
 }
+void Block::addMinesAround(int number){
+	_mine_around += number;
+}
+int Block::getMinesAround(){
+	return _mine_around;
+}
+
 Block::Block_Type Block::type()
 {
 	return _type;
@@ -56,7 +63,6 @@ Block& Map::getBlock(int number)
 Block& Map::getBlock(int i, int j){
 	// Подумать
 	int elem = i*_size+j;
-//	qDebug() << "\nnumber: " << elem;
 	if(elem < _number_blocks)
 		return _blocks[elem];
 	else
@@ -76,10 +82,37 @@ void Map::init_mines(){
 	for(int i(0);i<number_mines;i++)
 	{
 		int elem = std::rand()%_number_blocks;
-		if(_blocks[elem].type() == Block::MINE)
+		if(_blocks[elem].type() != Block::MINE)
+		{
 			_blocks[elem].setType(Block::MINE); // А-алгоритм
-		else
-			_blocks[std::rand()%_number_blocks].setType(Block::MINE);
+
+			if(elem-_size>=0)
+				_blocks[elem-_size].addMinesAround();
+
+			if(elem+1 < _number_blocks && (elem+1)%_size!=0) // Не справа
+				_blocks[elem+1].addMinesAround();
+
+			if(elem-1 >= 0 && elem % _size !=0) // не слева
+				_blocks[elem-1].addMinesAround();
+
+			if(elem-_size-1 >= 0 && elem % _size !=0) //не слева
+				_blocks[elem - _size-1].addMinesAround();
+
+			if(elem + _size-1 < _number_blocks && elem % _size !=0) // Не слева
+				_blocks[elem + _size-1].addMinesAround();
+
+			if(elem+_size < _number_blocks)
+				_blocks[elem + _size].addMinesAround();
+
+			if(elem-_size+1 >=0 && (elem+1)%_size!=0) // Не справа
+				_blocks[elem-_size+1].addMinesAround();
+
+			if(elem + _size+1 < _number_blocks && (elem+1)%_size!=0) // Не справа
+				_blocks[elem+_size+1].addMinesAround();
+
+		}
+		//else
+		//	_blocks[std::rand()%_number_blocks].setType(Block::MINE);
 
 
 	}
@@ -92,6 +125,7 @@ void Map::left_mouse_click(sf::Vector2i pos,Gamer &gamer,sf::RenderWindow &w){
 	if(first_click)
 		Map::init_mines();
 	first_click = false;
+	qDebug() << "Mines around: " << getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).getMinesAround() << endl;
 }
 void Map::right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w){
 	if(getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).isOpen())

@@ -22,10 +22,10 @@ class Block{
 public:
     enum Block_Type{ // Что таит одна клетка?
         EMPTY_, // Без мины / флага
-        MINE // Поле с миной
+		MINE // Поле с миной
     };
 	Block(int i=0, int j=0,Block_Type type=EMPTY_):
-		_i(i), _j(j), _type(type), _open(false), _flag(false)
+		_i(i), _j(j), _type(type), _open(false), _flag(false),_mine_around(0)
 	{}
 
 	Block_Type type();
@@ -33,7 +33,9 @@ public:
     bool isFlag(void);
 	void setType(Block_Type type);
 	void setFlag(bool flag=true);
+	void addMinesAround(int number=1);
 	void open(Gamer &gamer);
+	int getMinesAround();
 
 private:
     int _i; // Позиция блока в большом поле
@@ -41,6 +43,7 @@ private:
     Block_Type _type;
     bool _open;
     bool _flag;
+	int _mine_around; // Сколько мин в соседних блоках?
 };
 class Map // Всё поле
 {
