@@ -1,4 +1,16 @@
 #include "render.h"
+void Render_win(){
+	static bool first = true;
+	if(!first) // Победа бывает только первой свежести (c)
+		return;
+
+	first = false; // Она же первая, она же последняя..
+
+		static Music music;
+		music.openFromFile("Sounds/win.ogg");
+		music.play();
+
+}
 void Render_flag_animated(int i, int j, sf::RenderWindow &window){
 	static sf::Clock clock;
 	static float time = clock.getElapsedTime().asMicroseconds();
@@ -11,7 +23,6 @@ void Render_flag_animated(int i, int j, sf::RenderWindow &window){
 	current_frame += time;
 	if(current_frame > 4)
 		current_frame=0;
-
 	rect.left = int(current_frame)*32;
 	static Texture texture;
 	texture.loadFromFile("Images/flag_animated.png");
@@ -26,18 +37,20 @@ void Render_flag_animated(int i, int j, sf::RenderWindow &window){
 void Render_explosion_animated(int i, int j, sf::RenderWindow &window){
 	static sf::Clock clock;
 	static float time = clock.getElapsedTime().asMicroseconds();
-	static IntRect rect;
-	rect.height = 64;
-	rect.width = 32;
-	static float current_frame = 0;
-	current_frame += time;
-	current_frame += 0.072;
-	if(current_frame > 5)
-		current_frame=0;
-	rect.left = int(current_frame)*32;
+
 	static Texture texture;
 	texture.loadFromFile("Images/explosion_many.png");
 	static Sprite sprite(texture);
+	static float current_frame = 0;
+	current_frame += time;
+	current_frame += 0.072;
+	if(current_frame > texture.getSize().x/32)
+		current_frame=0;
+	static IntRect rect;
+	rect.height = 64;
+	rect.width = 32;
+	rect.left = int(current_frame)*32;
+
 	sprite.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE-BLOCK_RENDER_SIZE);
 	sprite.setTextureRect(rect);
 	window.draw(sprite);
@@ -47,6 +60,12 @@ void Render_explosion_animated(int i, int j, sf::RenderWindow &window){
 
 }
 void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
+	if(gamer.isWinner()){
+		gamer.kill(); // Победил - и в последний путь
+		Render_win(); // Да про рендер звука не забудь!
+	}
+
+
 	RectangleShape rs;
 	rs.setFillColor(sf::Color(255,255,255));
 	rs.setSize( sf::Vector2f(BLOCK_RENDER_SIZE,BLOCK_RENDER_SIZE) );
@@ -96,21 +115,23 @@ void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
 	static Sprite sprite_explosion(texture_explosion);
 	first = false;
 
-	static int explosion_point_i(0), explosion_point_j(0);
+	static int explosion_point_i(-128), explosion_point_j(-128);
 	for(int i(0);i<map.getSize();i++)
 		for(int j(0);j<map.getSize();j++)
 		{
+
+
 			rs.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
 			if(map.getBlock(i,j).isOpen()){ // Здесь будем рендерить открытые поля
 
 				if(map.getBlock(i,j).type() == Block::MINE){
 					// рендер мины
-
 					sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
 					window.draw(sprite_mine);
-				//	Render_explosion_animated(i,j,window);
 					explosion_point_i = i;
 					explosion_point_j = j;
+
+
 				}else{
 					// Редер пустого поля
 					sprite_empty_opened.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
@@ -140,20 +161,25 @@ void Render_field(sf::RenderWindow &window,Map &map,Gamer gamer=Gamer() ){
 				sprite_default.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
 				window.draw(sprite_default);
 			}
-			if(map.getBlock(i,j).isFlag())// Реднерим флаги
+			if(!gamer.isAlive() && map.getBlock(i,j).type() == Block::MINE){
+				sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
+				window.draw(sprite_mine);
+				Render_explosion_animated(explosion_point_i,explosion_point_j,window);
+			}
+			if(map.getBlock(i,j).Flag())// Реднерим флаги
 				Render_flag_animated(i,j,window);
 
 		}
-	if(!gamer.isAlive())
-	{ // Вскрываем карты
-		for(int i(0);i<map.getSize();i++)
-			for(int j(0);j<map.getSize();j++)
-				if(map.getBlock(i,j).type() == Block::MINE){
-					sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
-					window.draw(sprite_mine);
-				}
-		Render_explosion_animated(explosion_point_i,explosion_point_j,window);
-	}
+//	if(!gamer.isAlive())
+//	{ // Вскрываем карты
+//		for(int i(0);i<map.getSize();i++)
+//			for(int j(0);j<map.getSize();j++)
+//				if(map.getBlock(i,j).type() == Block::MINE){
+//					sprite_mine.setPosition(j*BLOCK_RENDER_SIZE,i*BLOCK_RENDER_SIZE);
+//					window.draw(sprite_mine);
+//				}
+//		Render_explosion_animated(explosion_point_i,explosion_point_j,window);
+//	}
 
 }
 

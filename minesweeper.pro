@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
-
+RC_FILE = res.qrc
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = minesweeper
@@ -34,3 +34,8 @@ DEPENDPATH += "/home/semitro/libs/SFML-2.2/include"
 
 #где /home/user/Projects/SFML/lib - путь к только что собранным вами библиотекам, а
 #/home/user/Projects/SFML/include - путь к загруженным вами исходникам
+
+DISTFILES +=
+
+RESOURCES += \
+    res.qrc

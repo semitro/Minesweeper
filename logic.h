@@ -11,18 +11,22 @@
 class Gamer
 {
 public:
-	Gamer(int flag_number=20):_alive(true), _flag_number(flag_number){}
+	Gamer(int flag_number=20):_alive(true), _flag_number(flag_number),_winner(false){}
 	bool isAlive();
+	bool isWinner();
 	void kill();
+	void youAreWin();
 	void lessFlag(int number=1);
+	int getFlagsNumber();
 private:
 	bool _alive;
+	bool _winner;// Победил уже?
 	int _flag_number;
 };
 class Block{
 public:
     enum Block_Type{ // Что таит одна клетка?
-        EMPTY_, // Без мины / флага
+		EMPTY_, // Без мины
 		MINE // Поле с миной
     };
 	Block(int i=0, int j=0,Block_Type type=EMPTY_):
@@ -31,7 +35,7 @@ public:
 
 	Block_Type type();
 	bool isOpen(void);
-    bool isFlag(void);
+	bool Flag(void);
 	void setType(Block_Type type);
 	void setFlag(bool flag=true);
 	void addMinesAround(int number=1);
@@ -40,7 +44,7 @@ public:
 
 private:
     int _i; // Позиция блока в большом поле
-    int _j;
+	int _j; // Честно говоря, нахрен не нужна
     Block_Type _type;
     bool _open;
     bool _flag;
@@ -58,10 +62,14 @@ public:
 	void init_mines();
 	void left_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
 	void right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
+	void openBlock(int i, int j,Gamer &gamer);
+	void openBlock(int elem,Gamer &gamer);
+	bool win(Gamer &gamer);
 private:
     Block *_blocks; //Динамический массив для хранения клеток поля
 	int _number_blocks; // Количество клеток поля
     int _size; // Количество клеток (не в квадрате)
+	bool _minesIsInited; // Проинициализированы ли уже мины? (Фиксит баг с победой при первом ходе)
 };
 
 #endif // LOGIC_H

@@ -10,5 +10,6 @@ using namespace sf;
 void Render_flag_animated(int i, int j, sf::RenderWindow &window);
 void Render_explosion_animated(int i, int j, sf::RenderWindow &window);
 void Render_field(sf::RenderWindow &window, Map &map, Gamer gamer);
+void Render_win();
 #endif // RENDER_H
 
