@@ -62,10 +62,10 @@ public:
 	void init_mines();
 	void left_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
 	void right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w);
-	void openBlock(int i, int j,Gamer &gamer);
-	void openBlock(int elem,Gamer &gamer);
 	bool win(Gamer &gamer);
 private:
+	void openBlock(int i, int j,Gamer &gamer);
+	void openEmptyBlocksAround(int elem,Gamer &gamer);
     Block *_blocks; //Динамический массив для хранения клеток поля
 	int _number_blocks; // Количество клеток поля
     int _size; // Количество клеток (не в квадрате)

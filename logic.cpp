@@ -33,9 +33,7 @@ void Block::open(Gamer &gamer)
 {
 	if(_flag)
 		return; // Если поле с флагом - не откроем его никак
-
-		_open = true;
-
+	_open = true;
 	if(_type == MINE)
 		gamer.kill();
 }
@@ -85,7 +83,7 @@ int Map::getSize(){
 void Map::init_mines(){
 	_minesIsInited = true;
 	std::srand(std::time(NULL));
-	int number_mines = (_number_blocks*1.2)/10+1; // Количество мин
+	int number_mines = (_number_blocks*1.4)/10+1; // Количество мин
 	for(int i(0);i<number_mines;i++)
 	{
 		int elem = std::rand()%_number_blocks;
@@ -124,15 +122,61 @@ void Map::init_mines(){
 
 	}
 }
+void Map::openEmptyBlocksAround(int elem, Gamer &gamer){
+	if(_blocks[elem].isOpen() || _blocks[elem].Flag()
+	|| _blocks[elem].getMinesAround()!=0 || _blocks[elem].type() != Block::EMPTY_)
+		return;
+	else
+		getBlock(elem).open(gamer);
+
+	if(elem-1 >= 0  && elem % _size !=0 && _blocks[elem-1].getMinesAround() !=0) // Открываем краешки
+		getBlock(elem-1).open(gamer);
+
+	if(elem+1 < _number_blocks && (elem+1)%_size!=0 && _blocks[elem+1].getMinesAround() !=0)
+		getBlock(elem+1).open(gamer);
+
+	if(elem-_size >= 0 && _blocks[elem-_size].getMinesAround() !=0)
+		getBlock(elem-_size).open(gamer);
+
+	if(elem+_size < _number_blocks && _blocks[elem+_size].getMinesAround() !=0)
+		getBlock(elem+_size).open(gamer);
+
+		if(elem-1 >= 0  && elem % _size !=0)
+			openEmptyBlocksAround(elem-1,gamer); // Рекурсивно открываем поле слева
+
+		if(elem+1 < _number_blocks && (elem+1)%_size!=0 )
+			openEmptyBlocksAround(elem+1,gamer); // Рекурсивно открываем поле справа
+
+		if(elem-_size >= 0	&& _blocks[elem-_size].type() == Block::EMPTY_)
+			openEmptyBlocksAround(elem-_size,gamer);
+
+		if(elem+_size < _number_blocks && _blocks[elem+_size].type() == Block::EMPTY_)
+			openEmptyBlocksAround(elem+_size,gamer);
+
+
+
+}
+void Map::openBlock(int i, int j, Gamer &gamer){
+
+	int elem = i*_size +j; // Перевод в одномерное матричное исчисление
+	openEmptyBlocksAround(elem,gamer);
+	getBlock(i,j).open(gamer);
+
+}
 void Map::left_mouse_click(sf::Vector2i pos,Gamer &gamer,sf::RenderWindow &w){
 	if(pos.y/BLOCK_RENDER_SIZE*_size + pos.x/BLOCK_RENDER_SIZE > _number_blocks) // Если клик за пределами поля
 		return;
 	//getBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE).open(gamer);
-	openBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE,gamer);
+
 	static bool first_click = true;
-	if(first_click)
+	if(first_click){
+		first_click = false;
 		Map::init_mines();
-	first_click = false;
+		left_mouse_click(pos,gamer,w);
+	}
+	else
+		openBlock(pos.y/BLOCK_RENDER_SIZE,pos.x/BLOCK_RENDER_SIZE,gamer);
+
 	if(win(gamer)){ // Проверяем, не достиг ли игрок победы этим ходом?
 		gamer.youAreWin(); // Если достиг, то он победитель
 	}
@@ -156,43 +200,6 @@ void Map::right_mouse_click(sf::Vector2i pos, Gamer &gamer, sf::RenderWindow &w)
 	if(win(gamer)){ // Проверяем, не достиг ли игрок победы этим ходом?
 		gamer.youAreWin(); // Если достиг, то он победитель
 	}
-}
-void Map::openBlock(int elem, Gamer &gamer){
-//	_blocks[elem].open(); // Доделать
-}
-void Map::openBlock(int i, int j, Gamer &gamer){
-	getBlock(i,j).open(gamer);
-//	int elem = i*_size +j; // Перевод в одномерное матричное исчисление
-//	if(_blocks[elem].type() != Block::MINE || !_blocks[elem].isOpen()) // Додумать, доделать
-//	{
-
-//	if(elem-_size>=0 && _blocks[elem- size].getMinesAround() == 0)
-//			openBlock();
-//			_blocks[elem-_size].open(gamer);
-
-//		if(elem+1 < _number_blocks && (elem+1)%_size!=0) // Не справа
-//			_blocks[elem+1].addMinesAround();
-
-//		if(elem-1 >= 0 && elem % _size !=0) // не слева
-//			_blocks[elem-1].addMinesAround();
-
-//		if(elem-_size-1 >= 0 && elem % _size !=0) //не слева
-//			_blocks[elem - _size-1].addMinesAround();
-
-//		if(elem + _size-1 < _number_blocks && elem % _size !=0) // Не слева
-//			_blocks[elem + _size-1].addMinesAround();
-
-//		if(elem+_size < _number_blocks)
-//			_blocks[elem + _size].addMinesAround();
-
-//		if(elem-_size+1 >=0 && (elem+1)%_size!=0) // Не справа
-//			_blocks[elem-_size+1].addMinesAround();
-
-//		if(elem + _size+1 < _number_blocks && (elem+1)%_size!=0) // Не справа
-//			_blocks[elem+_size+1].addMinesAround();
-
-//	}
-
 }
 bool Map::win(Gamer &gamer){
 	if(gamer.getFlagsNumber()  < 0 || !_minesIsInited || !gamer.isAlive())
